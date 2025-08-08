@@ -33,35 +33,32 @@ namespace BaiBaoCao
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chartAgeGroups = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblTotalResidents = new System.Windows.Forms.Label();
             this.lblTotalHouseholds = new System.Windows.Forms.Label();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.chartAgeGroups)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // chartAgeGroups
             // 
             chartArea1.Name = "ChartArea1";
             this.chartAgeGroups.ChartAreas.Add(chartArea1);
-
             legend1.Name = "Legend1";
             this.chartAgeGroups.Legends.Add(legend1);
-
             this.chartAgeGroups.Location = new System.Drawing.Point(57, 37);
             this.chartAgeGroups.Name = "chartAgeGroups";
-
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
-            series1.ChartType = SeriesChartType.Column; // ✅ DÒNG QUAN TRỌNG NHẤT
-
-
             this.chartAgeGroups.Series.Add(series1);
-
-            this.chartAgeGroups.Size = new System.Drawing.Size(523, 405);
+            this.chartAgeGroups.Size = new System.Drawing.Size(433, 327);
             this.chartAgeGroups.TabIndex = 0;
             this.chartAgeGroups.Text = "chart1";
-
             // 
             // lblTotalResidents
             // 
@@ -83,6 +80,22 @@ namespace BaiBaoCao
             this.lblTotalHouseholds.TabIndex = 2;
             this.lblTotalHouseholds.Text = "label2";
             // 
+            // chart1
+            // 
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
+            this.chart1.Location = new System.Drawing.Point(57, 404);
+            this.chart1.Name = "chart1";
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chart1.Series.Add(series2);
+            this.chart1.Size = new System.Drawing.Size(433, 327);
+            this.chart1.TabIndex = 0;
+            this.chart1.Text = "chart1";
+            // 
             // Form3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -90,11 +103,13 @@ namespace BaiBaoCao
             this.ClientSize = new System.Drawing.Size(1151, 755);
             this.Controls.Add(this.lblTotalHouseholds);
             this.Controls.Add(this.lblTotalResidents);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.chartAgeGroups);
             this.Name = "Form3";
             this.Text = "Form3";
             this.Load += new System.EventHandler(this.Form3_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chartAgeGroups)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -105,5 +120,6 @@ namespace BaiBaoCao
         private System.Windows.Forms.DataVisualization.Charting.Chart chartAgeGroups;
         private System.Windows.Forms.Label lblTotalResidents;
         private System.Windows.Forms.Label lblTotalHouseholds;
+        private Chart chart1;
     }
 }

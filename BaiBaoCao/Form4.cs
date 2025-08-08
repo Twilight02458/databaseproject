@@ -13,6 +13,8 @@ namespace BaiBaoCao
     public partial class Form4 : Form
     {
         private readonly ResidentManagement residentManagement;
+        
+
         public Form4()
         {
             InitializeComponent();
@@ -29,6 +31,7 @@ namespace BaiBaoCao
             nudYear.Maximum = DateTime.Now.Year + 1;
             nudYear.Value = DateTime.Now.Year;
         }
+
 
         private void Form4_Load(object sender, EventArgs e)
         {
@@ -107,100 +110,207 @@ namespace BaiBaoCao
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (!ValidateInput()) return;
+            try
+            {
+                // Debug: Show ComboBox state
+                string debugInfo = $"Items count: {cbHousehold.Items.Count}\n";
+                debugInfo += $"SelectedIndex: {cbHousehold.SelectedIndex}\n";
+                debugInfo += $"SelectedValue: {cbHousehold.SelectedValue}\n";
+                debugInfo += $"SelectedItem: {cbHousehold.SelectedItem}\n";
+                
+                if (cbHousehold.SelectedItem != null)
+                {
+                    var selectedItem = (DataRowView)cbHousehold.SelectedItem;
+                    debugInfo += $"Selected Item Value: {selectedItem["Value"]}\n";
+                    debugInfo += $"Selected Item Text: {selectedItem["Text"]}\n";
+                }
+                
+                Console.WriteLine(debugInfo);
+                MessageBox.Show(debugInfo, "Debug - Before ValidateInput");
 
-            int? householdIdNullable = (int?)cbHousehold.SelectedValue;
-            if (!householdIdNullable.HasValue)
-            {
-                MessageBox.Show("Hộ gia đình không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            int householdId = householdIdNullable.Value;
-            string serviceType = txtServiceType.Text.Trim();
-            if (!decimal.TryParse(txtAmount.Text, out decimal amount))
-            {
-                MessageBox.Show("Số tiền không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            int month = (int)nudMonth.Value;
-            int year = (int)nudYear.Value;
-            string status = cbStatus.SelectedItem.ToString();
-            DateTime dueDate = dtpDueDate.Value;
+                if (!ValidateInput()) 
+                {
+                    MessageBox.Show("Validation failed", "Debug");
+                    return;
+                }
 
-            if (residentManagement.AddBill(householdId, serviceType, amount, month, year, status, dueDate))
-            {
-                MessageBox.Show("Thêm hóa đơn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadBills();
-                ClearInputs();
+                // Get the selected value from the DataRowView
+                if (cbHousehold.SelectedItem == null)
+                {
+                    MessageBox.Show("Vui lòng chọn một hộ gia đình!", "Lỗi", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var selectedHousehold = (DataRowView)cbHousehold.SelectedItem;
+                int? householdId = selectedHousehold["Value"] as int?;
+
+                if (!householdId.HasValue)
+                {
+                    MessageBox.Show("Hộ gia đình không hợp lệ!", "Lỗi", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string serviceType = txtServiceType.Text.Trim();
+                if (!decimal.TryParse(txtAmount.Text, out decimal amount))
+                {
+                    MessageBox.Show("Vui lòng nhập số tiền hợp lệ!", "Lỗi", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int month = (int)nudMonth.Value;
+                int year = (int)nudYear.Value;
+                string status = cbStatus.SelectedItem?.ToString() ?? "pending";
+                DateTime dueDate = dtpDueDate.Value;
+
+                if (residentManagement.AddBill(householdId.Value, serviceType, amount, month, year, status, dueDate))
+                {
+                    MessageBox.Show("Thêm hóa đơn thành công!", "Thành công", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadBills();
+                    
+                    ClearInputs();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể thêm hóa đơn. Vui lòng thử lại!", "Lỗi", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Không thể thêm hóa đơn!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}\n\nChi tiết: {ex.StackTrace}", 
+                      "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (dataGridViewBills.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Vui lòng chọn hóa đơn để sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                if (dataGridViewBills.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng chọn hóa đơn để sửa!", "Cảnh báo",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            if (!ValidateInput()) return;
+                if (!ValidateInput())
+                {
+                    return;
+                }
 
-            int billId = Convert.ToInt32(dataGridViewBills.SelectedRows[0].Cells["ID"].Value);
-            int householdId = (int)cbHousehold.SelectedValue;
-            string serviceType = txtServiceType.Text.Trim();
-            if (!decimal.TryParse(txtAmount.Text, out decimal amount))
-            {
-                MessageBox.Show("Số tiền không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            int month = (int)nudMonth.Value;
-            int year = (int)nudYear.Value;
-            string status = cbStatus.SelectedItem.ToString();
-            DateTime dueDate = dtpDueDate.Value;
+                // Get the selected bill ID
+                int billId = Convert.ToInt32(dataGridViewBills.SelectedRows[0].Cells["ID"].Value);
 
-            if (residentManagement.UpdateBill(billId, householdId, serviceType, amount, month, year, status, dueDate))
-            {
-                MessageBox.Show("Cập nhật hóa đơn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadBills();
-                ClearInputs();
+                // Get the selected household
+                if (cbHousehold.SelectedItem == null)
+                {
+                    MessageBox.Show("Vui lòng chọn một hộ gia đình!", "Lỗi",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var selectedHousehold = (DataRowView)cbHousehold.SelectedItem;
+                if (selectedHousehold["Value"] == DBNull.Value || selectedHousehold["Value"] == null)
+                {
+                    MessageBox.Show("Hộ gia đình không hợp lệ!", "Lỗi",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int householdId = Convert.ToInt32(selectedHousehold["Value"]);
+                string serviceType = txtServiceType.Text.Trim();
+
+                if (!decimal.TryParse(txtAmount.Text, out decimal amount))
+                {
+                    MessageBox.Show("Số tiền không hợp lệ!", "Lỗi",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int month = (int)nudMonth.Value;
+                int year = (int)nudYear.Value;
+                string status = cbStatus.SelectedItem?.ToString() ?? "pending";
+                DateTime dueDate = dtpDueDate.Value;
+
+                if (residentManagement.UpdateBill(billId, householdId, serviceType, amount, month, year, status, dueDate))
+                {
+                    MessageBox.Show("Cập nhật hóa đơn thành công!", "Thành công",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadBills();
+                    
+                    ClearInputs();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể cập nhật hóa đơn. Vui lòng thử lại!", "Lỗi",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Không thể cập nhật hóa đơn!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Đã xảy ra lỗi khi cập nhật hóa đơn: {ex.Message}\n\nChi tiết: {ex.StackTrace}",
+                              "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (dataGridViewBills.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Vui lòng chọn hóa đơn để xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                if (dataGridViewBills.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng chọn hóa đơn để xóa!", "Cảnh báo",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            if (MessageBox.Show("Bạn có chắc muốn xóa hóa đơn này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                // Get the selected bill details for confirmation message
+                var selectedRow = dataGridViewBills.SelectedRows[0];
+                string serviceType = selectedRow.Cells["Loại Phí"].Value?.ToString() ?? "";
+                string amount = selectedRow.Cells["Số Tiền"].Value?.ToString() ?? "";
+                string month = selectedRow.Cells["Tháng"].Value?.ToString() ?? "";
+                string year = selectedRow.Cells["Năm"].Value?.ToString() ?? "";
+
+                string confirmationMessage = $"Bạn có chắc chắn muốn xóa hóa đơn này?\n\n" +
+                                           $"Loại phí: {serviceType}\n" +
+                                           $"Số tiền: {amount}\n" +
+                                           $"Tháng/Năm: {month}/{year}";
+
+                if (MessageBox.Show(confirmationMessage, "Xác nhận xóa",
+                                   MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    int billId = Convert.ToInt32(selectedRow.Cells["ID"].Value);
+
+                    if (residentManagement.DeleteBill(billId))
+                    {
+                        MessageBox.Show("Xóa hóa đơn thành công!", "Thành công",
+                                      MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadBills();
+                        
+                        ClearInputs();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Không thể xóa hóa đơn. Vui lòng thử lại!", "Lỗi",
+                                      MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                int billId = Convert.ToInt32(dataGridViewBills.SelectedRows[0].Cells["ID"].Value);
-                if (residentManagement.DeleteBill(billId))
-                {
-                    MessageBox.Show("Xóa hóa đơn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadBills();
-                    ClearInputs();
-                }
-                else
-                {
-                    MessageBox.Show("Không thể xóa hóa đơn!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show($"Đã xảy ra lỗi khi xóa hóa đơn: {ex.Message}\n\nChi tiết: {ex.StackTrace}",
+                              "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnRefesh_Click(object sender, EventArgs e)
         {
             LoadBills();
+           
         }
     }
 }

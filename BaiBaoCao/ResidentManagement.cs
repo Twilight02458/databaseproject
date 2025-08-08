@@ -86,6 +86,16 @@ namespace BaiBaoCao
                                 "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        public class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public int? Value { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
         public void LoadHouseholds(System.Windows.Forms.ComboBox comboBox)
         {
             try
@@ -93,35 +103,76 @@ namespace BaiBaoCao
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT household_id, apartment_id FROM households";
+                    // Updated query to include all necessary columns
+                    string query = @"SELECT h.household_id, h.apartment_id, r.name as head_name 
+                                   FROM households h
+                                   LEFT JOIN residents r ON h.head_of_household_id = r.resident_id";
+                    
+                    // Create a DataTable to hold the results
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("Text", typeof(string));
+                    dt.Columns.Add("Value", typeof(int));
+                    
+                    // Add the default item
+                    dt.Rows.Add("Chọn hộ gia đình", DBNull.Value);
+                    
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        bool hasData = false;
+                        while (reader.Read())
                         {
-                            comboBox.Items.Clear();
-                            comboBox.Items.Add(new { Text = "Chọn hộ gia đình", Value = (int?)null });
-                            bool hasData = false;
-                            while (reader.Read())
-                            {
-                                hasData = true;
-                                int householdId = reader.GetInt32("household_id");
-                                int apartmentId = reader.GetInt32("apartment_id");
-                                comboBox.Items.Add(new { Text = $"Hộ {householdId} (Căn hộ {apartmentId})", Value = householdId });
-                            }
-                            if (!hasData)
-                            {
-                                MessageBox.Show("Không có hộ gia đình nào trong cơ sở dữ liệu!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
+                            hasData = true;
+                            int householdId = reader.GetInt32("household_id");
+                            int apartmentId = reader.GetInt32("apartment_id");
+                            string headName = !reader.IsDBNull(reader.GetOrdinal("head_name")) ? 
+                                            reader.GetString("head_name") : "Chưa có chủ hộ";
+                            
+                            dt.Rows.Add($"Hộ {householdId} (Căn {apartmentId}) - {headName}", householdId);
+                        }
+                        
+                        if (!hasData)
+                        {
+                            MessageBox.Show("Không có hộ gia đình nào trong cơ sở dữ liệu!", 
+                                "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
+                    
+                    // Clear existing items and data source
+                    comboBox.BeginUpdate();
+                    comboBox.DataSource = null;
+                    comboBox.Items.Clear();
+                    
+                    // Set up the ComboBox
                     comboBox.DisplayMember = "Text";
                     comboBox.ValueMember = "Value";
-                    comboBox.SelectedIndex = 0;
+                    comboBox.DataSource = dt;
+                    
+                    // Ensure the first item is selected
+                    if (comboBox.Items.Count > 0)
+                    {
+                        comboBox.SelectedIndex = 0;
+                    }
+                    
+                    comboBox.EndUpdate();
+                    
+                    // Debug information
+                    Console.WriteLine($"Loaded {comboBox.Items.Count} items into ComboBox");
+                    if (comboBox.SelectedItem != null)
+                    {
+                        var selectedRow = (DataRowView)comboBox.SelectedItem;
+                        Console.WriteLine($"Selected Item - Text: {selectedRow["Text"]}, Value: {selectedRow["Value"]}");
+                    }
                 }
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show($"Lỗi MySQL: {ex.Message} (Mã lỗi: {ex.Number})\nStack Trace: {ex.StackTrace}",
+                                "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}\nStack Trace: {ex.StackTrace}",
                                 "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -616,5 +667,6 @@ namespace BaiBaoCao
                 return false;
             }
         }
+        
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace BaiBaoCao
             {
                 if (loginForm.ShowDialog() == DialogResult.OK)
                 {
-                    Application.Run(new Form1(loginForm.LoggedInUser));
+                    Application.Run(new FormMenu(loginForm.LoggedInUser, loginForm.LoggedInUserId));
                 }
             }
         }

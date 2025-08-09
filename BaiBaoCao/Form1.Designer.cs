@@ -1,4 +1,4 @@
-﻿namespace BaiBaoCao
+namespace BaiBaoCao
 {
     partial class Form1
     {
@@ -47,7 +47,7 @@
             this.btnExit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
-            this.btnStatistics = new System.Windows.Forms.Button();
+            this.btnBills = new System.Windows.Forms.Button();
             this.btnOpenHouseholdForm = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.cmbHousehold = new System.Windows.Forms.ComboBox();
@@ -59,7 +59,6 @@
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.btnBills = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -108,9 +107,9 @@
             this.chkDateOfBirth.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkDateOfBirth.Location = new System.Drawing.Point(402, 148);
             this.chkDateOfBirth.Name = "chkDateOfBirth";
-            this.chkDateOfBirth.Size = new System.Drawing.Size(60, 24);
+            this.chkDateOfBirth.Size = new System.Drawing.Size(91, 24);
             this.chkDateOfBirth.TabIndex = 4;
-            this.chkDateOfBirth.Text = "Null";
+            this.chkDateOfBirth.Text = "Not Null";
             this.chkDateOfBirth.UseVisualStyleBackColor = true;
             // 
             // dtpDateOfBirth
@@ -217,7 +216,6 @@
             this.groupBox2.Controls.Add(this.btnDelete);
             this.groupBox2.Controls.Add(this.btnUpdate);
             this.groupBox2.Controls.Add(this.btnBills);
-            this.groupBox2.Controls.Add(this.btnStatistics);
             this.groupBox2.Controls.Add(this.btnOpenHouseholdForm);
             this.groupBox2.Controls.Add(this.btnAdd);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -258,15 +256,15 @@
             this.btnUpdate.UseVisualStyleBackColor = true;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click_1);
             // 
-            // btnStatistics
+            // btnBills
             // 
-            this.btnStatistics.Location = new System.Drawing.Point(157, 102);
-            this.btnStatistics.Name = "btnStatistics";
-            this.btnStatistics.Size = new System.Drawing.Size(103, 58);
-            this.btnStatistics.TabIndex = 0;
-            this.btnStatistics.Text = "Thống kê";
-            this.btnStatistics.UseVisualStyleBackColor = true;
-            this.btnStatistics.Click += new System.EventHandler(this.btnStatistics_Click);
+            this.btnBills.Location = new System.Drawing.Point(157, 102);
+            this.btnBills.Name = "btnBills";
+            this.btnBills.Size = new System.Drawing.Size(103, 58);
+            this.btnBills.TabIndex = 0;
+            this.btnBills.Text = "Phí";
+            this.btnBills.UseVisualStyleBackColor = true;
+            this.btnBills.Click += new System.EventHandler(this.btnBills_Click);
             // 
             // btnOpenHouseholdForm
             // 
@@ -318,8 +316,6 @@
             // chkFilterDate
             // 
             this.chkFilterDate.AutoSize = true;
-            this.chkFilterDate.Checked = true;
-            this.chkFilterDate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkFilterDate.Location = new System.Drawing.Point(408, 134);
             this.chkFilterDate.Name = "chkFilterDate";
             this.chkFilterDate.Size = new System.Drawing.Size(59, 24);
@@ -381,16 +377,6 @@
             this.label8.TabIndex = 6;
             this.label8.Text = "Tìm kiếm:";
             // 
-            // btnBills
-            // 
-            this.btnBills.Location = new System.Drawing.Point(295, 102);
-            this.btnBills.Name = "btnBills";
-            this.btnBills.Size = new System.Drawing.Size(103, 58);
-            this.btnBills.TabIndex = 0;
-            this.btnBills.Text = "Phí";
-            this.btnBills.UseVisualStyleBackColor = true;
-            this.btnBills.Click += new System.EventHandler(this.btnBills_Click);
-            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1238, 744);
@@ -399,6 +385,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataGridView1);
             this.Name = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -441,7 +428,6 @@
         private System.Windows.Forms.DateTimePicker dtpFilterDate;
         private System.Windows.Forms.CheckBox chkFilterDate;
         private System.Windows.Forms.Button btnOpenHouseholdForm;
-        private System.Windows.Forms.Button btnStatistics;
         private System.Windows.Forms.Button btnBills;
     }
 }

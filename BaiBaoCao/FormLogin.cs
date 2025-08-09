@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +14,7 @@ namespace BaiBaoCao
     {
         private readonly ResidentManagement residentManagement;
         public string LoggedInUser { get; private set; }
+        public int LoggedInUserId { get; private set; } = -1;
         public FormLogin()
         {
             InitializeComponent();
@@ -44,10 +45,10 @@ namespace BaiBaoCao
             if (residentManagement.ValidateUser(username, password))
             {
                 LoggedInUser = username;
-                int userId = residentManagement.GetUserId(username);
-                if (userId != -1)
+                LoggedInUserId = residentManagement.GetUserId(username);
+                if (LoggedInUserId != -1)
                 {
-                    residentManagement.LogLogin(userId);
+                    residentManagement.LogLogin(LoggedInUserId);
                 }
                 this.DialogResult = DialogResult.OK;
                 this.Close();

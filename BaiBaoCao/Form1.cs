@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,9 +16,11 @@ namespace BaiBaoCao
     {
         private ResidentManagement residentManagement;
         private readonly int userId;
-        public Form1(string username)
+        public Form1(string username, int userId)
         {
             InitializeComponent();
+            this.userId = userId;
+            Console.WriteLine($"[DEBUG] Form1 created with username: {username}, userId: {userId}");
             residentManagement = new ResidentManagement();
             LoadResidents();
             LoadHouseholds();
@@ -40,13 +42,27 @@ namespace BaiBaoCao
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+            cmbHousehold.DisplayMember = "Text";
+            cmbHousehold.ValueMember = "Value";
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (userId != -1)
+            try
             {
-                residentManagement.LogLogout(userId);
+                if (userId > 0) // Only try to log logout if we have a valid user ID
+                {
+                    // Check if the user still exists before trying to log the logout
+                    int validUserId = residentManagement.GetUserId(userId.ToString());
+                    if (validUserId > 0)
+                    {
+                        residentManagement.LogLogout(userId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't prevent the form from closing
+                Console.WriteLine($"Error during logout: {ex.Message}");
             }
         }
         private void LoadResidents()
@@ -54,11 +70,7 @@ namespace BaiBaoCao
             int? householdId = null;
             if (cmbHousehold != null && cmbHousehold.SelectedIndex > 0)
             {
-                var selectedItem = cmbHousehold.SelectedItem;
-                if (selectedItem != null)
-                {
-                    householdId = (int?)selectedItem.GetType().GetProperty("Value").GetValue(selectedItem);
-                }
+                householdId = cmbHousehold.SelectedValue as int?;
             }
 
             DateTime? filterDate = null;
@@ -356,7 +368,47 @@ namespace BaiBaoCao
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            Close();
+            try
+            {
+                Console.WriteLine($"[DEBUG] btnExit_Click - Starting logout process for user ID: {userId}");
+                
+                // Only proceed if we have a valid user ID (greater than 0)
+                if (userId > 0)
+                {
+                    Console.WriteLine($"[DEBUG] Valid user ID: {userId}");
+                    
+                    // Check if the user exists before attempting to log out
+                    Console.WriteLine($"[DEBUG] Calling GetUserId for user ID: {userId}");
+                    int validUserId = residentManagement.GetUserId(userId.ToString());
+                    
+                    if (validUserId > 0)
+                    {
+                        Console.WriteLine($"[DEBUG] User exists, calling LogLogout for user ID: {userId}");
+                        bool logoutResult = residentManagement.LogLogout(userId);
+                        Console.WriteLine($"[DEBUG] LogLogout result: {logoutResult}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[DEBUG] User ID {userId} not found in database");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Invalid user ID: {userId}");
+                }
+                
+                Console.WriteLine("[DEBUG] Closing application");
+                Application.Exit(); // Use Application.Exit() instead of Close() to ensure proper shutdown
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] Error during logout: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"[ERROR] Inner exception: {ex.InnerException.Message}");
+                }
+                Application.Exit();
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -384,17 +436,17 @@ namespace BaiBaoCao
             using (Form2 householdForm = new Form2())
             {
                 householdForm.ShowDialog();
-                LoadHouseholds(); // Refresh the household list after Form2 closes
+                LoadHouseholds(); 
             }
         }
 
-        private void btnStatistics_Click(object sender, EventArgs e)
-        {
-            using (Form3 statisticsForm = new Form3())
-            {
-                statisticsForm.ShowDialog();
-            }
-        }
+        //private void btnStatistics_Click(object sender, EventArgs e)
+        //{
+        //    using (Form3 statisticsForm = new Form3())
+        //    {
+        //        statisticsForm.ShowDialog();
+        //    }
+        //}
 
         private void btnBills_Click(object sender, EventArgs e)
         {
@@ -403,6 +455,12 @@ namespace BaiBaoCao
                 billsForm.ShowDialog();
             }
         }
+
+        //private void btnLoginHistory_Click(object sender, EventArgs e)
+        //{
+        //    var historyForm = new FormHistory(residentManagement);
+        //    historyForm.ShowDialog();
+        //}
     }
 }
 

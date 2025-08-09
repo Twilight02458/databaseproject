@@ -49,3 +49,11 @@ D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\BCrypt.Net-Next.dll
 D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\BCrypt.Net-Next.xml
 D:\Giang_Project\BaiBaoCao\BaiBaoCao\obj\Debug\BaiBaoCao.Form3.resources
 D:\Giang_Project\BaiBaoCao\BaiBaoCao\obj\Debug\BaiBaoCao.Form4.resources
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.Text.Encodings.Web.dll
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.Text.Json.dll
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.ValueTuple.dll
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.Text.Encodings.Web.xml
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.Text.Json.xml
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\bin\Debug\System.ValueTuple.xml
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\obj\Debug\BaiBaoCao.FormHistory.resources
+D:\Giang_Project\BaiBaoCao\BaiBaoCao\obj\Debug\BaiBaoCao.FormMenu.resources
